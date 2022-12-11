@@ -21,6 +21,7 @@ def read_file(file_name):
 df_energy_total,df_energy_countries = read_file("Energy_Use.xls")
 df_co2_total,df_co2_countries = read_file("CO2_Emission.xls")
 df_renew_total,df_renew_countries = read_file("Renewable.xls")
+df_gdp_total, df_gdp_countries =read_file("GDP_Per_Capita.xls")
 
 
 """
@@ -42,7 +43,7 @@ df_energy_countries = df_energy_countries[df_energy_countries.index>1989]
 df_energy_countries = df_energy_countries.dropna(axis = 'columns')
 #df_energy_countries.to_excel("E:/Herts/ADS1/Assignment 2/ADS1 Statistics and trends/transposed.xlsx")
 
-countries =['Canada', 'United Kingdom', 'China',  'France', 'India','United States']
+countries =['Canada', 'United Kingdom', 'China',  'France', 'India','United States', 'Bangladesh', 'Germany']
 df_energy_time = pd.DataFrame.transpose(df_energy_countries)
 years = [1990, 1995, 2000, 2005, 2010, 2014]
 df_energy_subset_time = df_energy_time[years].copy()
@@ -51,7 +52,7 @@ df_energy_subset_time = df_energy_subset_time.loc[df_energy_subset_time.index.is
 #print(df_energy_subset_time[1995])
 
 
-n=6
+n=8
 r=np.arange(n)
 width= 0.1
 plt.bar(r-0.3, df_energy_subset_time[1990], color = 'grey',width = width, edgecolor = 'black',label='1990')
@@ -96,7 +97,7 @@ df_co2_countries = df_co2_countries[df_co2_countries.index>1989]
 df_co2_countries = df_co2_countries.dropna(axis = 'columns')
 #df_energy_countries.to_excel("E:/Herts/ADS1/Assignment 2/ADS1 Statistics and trends/transposed.xlsx")
 
-countries =['Canada', 'United Kingdom', 'China', 'India', 'France', 'Brazil']
+countries =['Canada', 'United Kingdom', 'China',  'France', 'India','United States', 'Bangladesh', 'Germany']
 df_co2_time = pd.DataFrame.transpose(df_co2_countries)
 years = [1990, 1995, 2000, 2005, 2010, 2014]
 df_co2_subset_time = df_co2_time[years].copy()
@@ -105,7 +106,7 @@ df_co2_subset_time = df_co2_subset_time.loc[df_co2_subset_time.index.isin(countr
 #print(df_energy_subset_time[1995])
 
 
-n=6
+n=8
 r=np.arange(n)
 width= 0.1
 plt.bar(r-0.3, df_co2_subset_time[1990], color = 'aqua',width = width, edgecolor = 'black',label='1990')
@@ -149,7 +150,7 @@ df_renew_countries = df_renew_countries[df_renew_countries.index>1989]
 df_renew_countries = df_renew_countries.dropna(axis = 'columns')
 #df_energy_countries.to_excel("E:/Herts/ADS1/Assignment 2/ADS1 Statistics and trends/transposed.xlsx")
 
-countries =['Canada', 'United Kingdom', 'China', 'India', 'France', 'Brazil']
+countries =['Canada', 'United Kingdom', 'China',  'France', 'India','United States', 'Bangladesh', 'Germany']
 df_renew_time = pd.DataFrame.transpose(df_renew_countries)
 years = [1990, 1995, 2000, 2005, 2010, 2014]
 df_renew_subset_time = df_renew_time[years].copy()
@@ -158,7 +159,7 @@ df_renew_subset_time = df_renew_subset_time.loc[df_renew_subset_time.index.isin(
 #print(df_energy_subset_time[1995])
 
 
-n=6
+n=8
 r=np.arange(n)
 width= 0.1
 plt.bar(r-0.3, df_renew_subset_time[1990], color = 'aqua',width = width, edgecolor = 'black',label='1990')
@@ -179,3 +180,29 @@ plt.show()
 df_renew_subset = df_renew_countries[countries].copy()
 df_renew_subset = df_renew_subset.iloc[::5, :]
 header_subset = df_renew_subset.iloc[0].values.tolist()
+
+"""
+Lineplot
+"""
+
+header = df_gdp_countries.iloc[0].values.tolist()
+df_gdp_countries.columns = header
+
+
+df_gdp_countries = df_gdp_countries.iloc[1:]
+#print(df_energy_countries)
+df_gdp_countries = df_gdp_countries.iloc[11:55]
+
+df_gdp_countries.index = df_gdp_countries.index.astype(int)
+df_gdp_countries = df_gdp_countries[df_gdp_countries.index>1989]
+
+
+#df_energy_total.to_excel("E:/Herts/ADS1/Assignment 2/ADS1 Statistics and trends/transposed2.xlsx")
+df_gdp_countries = df_gdp_countries.dropna(axis = 'columns')
+
+print(df_gdp_countries["India"])
+
+plt.figure()
+plt.plot(df_gdp_countries.index, df_gdp_countries["India"], '--')
+plt.show()
+
