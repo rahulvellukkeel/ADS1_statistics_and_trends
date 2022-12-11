@@ -70,6 +70,7 @@ plt.xticks(width+r, countries, rotation = 45)
 plt.legend()
 plt.title("Energy use (kg of oil equivalent per capita)")
 plt.savefig("line1.png", dpi=300, bbox_inches='tight')
+plt.savefig("Energy_use.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -109,6 +110,7 @@ plt.ylabel("CO2 emission")
 plt.xticks(width+r, countries, rotation = 45)
 plt.legend()
 plt.title("CO2 emissions (kt)")
+plt.savefig("Co2.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -151,6 +153,7 @@ plt.ylabel("Energy(Renewable)")
 plt.xticks(width+r, countries, rotation = 45)
 plt.legend()
 plt.title("Renewable energy consumption (% of total final energy consumption)")
+plt.savefig("Renewable.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -192,5 +195,6 @@ plt.xlabel("Year")
 plt.ylabel("GDP")
 plt.legend(["India", "UK", "Can", "Ch", "Fr", "Ban", "DE", "US"])
 plt.title("GDP per capita, PPP (current international $)")
+plt.savefig("GDP Per Capita.png", dpi=300, bbox_inches='tight')
 plt.show()
 
