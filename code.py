@@ -24,7 +24,7 @@ def read_file(file_name):
 df_energy_total,df_energy_countries = read_file("Energy_Use.xls")
 df_co2_total,df_co2_countries = read_file("CO2_Emission.xls")
 df_renew_total,df_renew_countries = read_file("Renewable.xls")
-df_gdp_total, df_gdp_countries =read_file("GDP_Per_Capita.xls")
+df_gdp_total, df_gdp_countries = read_file("GDP_Per_Capita.xls")
 
 
 """
@@ -195,6 +195,6 @@ plt.xlabel("Year")
 plt.ylabel("GDP")
 plt.legend(["India", "UK", "Can", "Ch", "Fr", "Ban", "DE", "US"])
 plt.title("GDP per capita, PPP (current international $)")
-plt.savefig("GDP Per Capita.png", dpi=300, bbox_inches='tight')
+plt.savefig("GDP Per Capita.png", dpi = 300, bbox_inches='tight')
 plt.show()
 
