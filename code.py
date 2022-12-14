@@ -81,9 +81,11 @@ def country_df(country_name):
 
     """
 
-
+    #creates dataframe name
     df_name = "df_" + country_name
+    #creates dataframe
     df_name = pd.concat([df_energy_countries[country_name].astype(float), df_pop_countries[country_name].astype(float), df_gdp_countries[country_name].astype(float), df_renew_countries[country_name].astype(float), df_co2_countries[country_name].astype(float)], axis =1)
+    #Gives column names
     df_name.columns.values[0] = "Electricity"
     df_name.columns.values[1] = "Population"
     df_name.columns.values[2] = "GDP"
@@ -93,18 +95,30 @@ def country_df(country_name):
     return (df_name)
 
 
-def heatmap():
+def heatmap(country_name):
+    """
+    Creates a correlation heatmap for the country given as argument.
 
-    df_china = country_df("China")
-    df_uk = country_df("United Kingdom")
-    df_france = country_df("France")
-    
-    
-    dataplot = sb.heatmap(df_china.corr(), cmap="YlGnBu", annot=True)
-    plt.show()
-    dataplot = sb.heatmap(df_uk.corr(), cmap="YlGnBu", annot=True)
-    plt.show()
-    dataplot = sb.heatmap(df_france.corr(), cmap="YlGnBu", annot=True)
+    Parameters
+    ----------
+    country_name : string
+        Name of the country to create the heatmap for.
+
+    Returns
+    -------
+    None.
+
+    """
+
+    #creates dataframe name
+    df_name = "df_" + country_name
+    #cals function to create dataframe
+    df_name = country_df(country_name)
+    #plots heatmap
+    dataplot = sb.heatmap(df_name.corr(), cmap="YlGnBu", annot=True)
+    #saves figure
+    filename = country_name + "_heatmap.png"
+    plt.savefig(filename, dpi = 300, bbox_inches='tight')
     plt.show()
 
 
@@ -148,12 +162,11 @@ plt.bar(r+0.1, df_energy_subset_time[2006], color = 'steelblue',width = width, e
 plt.bar(r+0.2, df_energy_subset_time[2010], color = 'greenyellow',width = width, edgecolor = 'black',label='2010')
 plt.bar(r+0.3, df_energy_subset_time[2014], color = 'khaki',width = width, edgecolor = 'black',label='2014')
 plt.xlabel("Countries")
-plt.ylabel("Energy use")
+plt.ylabel("Electricity use")
 plt.xticks(width+r, countries_label)
 plt.legend()
-plt.title("Energy use (kg of oil equivalent per capita)")
-plt.savefig("line1.png", dpi=300, bbox_inches='tight')
-#plt.savefig("Energy_use.png", dpi=300, bbox_inches='tight')
+plt.title("Electric power consumption (kWh per capita)")
+plt.savefig("Electric_power.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -184,7 +197,7 @@ plt.ylabel("CO2 emission")
 plt.xticks(width+r, countries_label)
 plt.legend()
 plt.title("CO2 emissions (kt)")
-#plt.savefig("Co2.png", dpi=300, bbox_inches='tight')
+plt.savefig("Co2.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -216,7 +229,7 @@ plt.ylabel("Energy(Renewable)")
 plt.xticks(width+r, countries_label)
 plt.legend()
 plt.title("Renewable energy consumption (% of total final energy consumption)")
-#plt.savefig("Renewable.png", dpi=300, bbox_inches='tight')
+plt.savefig("Renewable.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -257,7 +270,7 @@ plt.xlabel("Year")
 plt.ylabel("GDP")
 plt.legend(['BD', 'CN', 'DE',  'FR', 'UK', 'IN', 'KE', 'KSA', 'US', 'IL'], prop = {'size': 8})
 plt.title("GDP per capita, PPP (current international $)")
-#plt.savefig("GDP Per Capita.png", dpi = 300, bbox_inches='tight')
+plt.savefig("GDP_Per_Capita.png", dpi = 300, bbox_inches='tight')
 plt.show()
 
 
@@ -296,24 +309,17 @@ plt.xlabel("Year")
 plt.ylabel("Population")
 plt.legend(['BD', 'CN', 'DE',  'FR', 'UK', 'IN', 'KE', 'KSA', 'US', 'IL'], prop = {'size': 8})
 plt.title("Population, total")
-#plt.savefig("GDP Per Capita.png", dpi = 300, bbox_inches='tight')
+plt.savefig("Population.png", dpi = 300, bbox_inches='tight')
 plt.show()
-
 
 
 """
-Creating heatmap of China and United Kingdom
+Calls the functions to create the heatmaps
 """
 
-df_china = country_df("China")
-df_uk = country_df("United Kingdom")
-df_france = country_df("France")
+heatmap("China")
+heatmap("United Kingdom")
+heatmap("France")
 
 
-dataplot = sb.heatmap(df_china.corr(), cmap="YlGnBu", annot=True)
-plt.savefig("China_heatmap.png", dpi = 300, bbox_inches='tight')
-plt.show()
-dataplot = sb.heatmap(df_uk.corr(), cmap="YlGnBu", annot=True)
-plt.show()
-dataplot = sb.heatmap(df_france.corr(), cmap="YlGnBu", annot=True)
-plt.show()
+
