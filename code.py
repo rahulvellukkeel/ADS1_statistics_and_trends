@@ -7,64 +7,141 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sb
 
 
 def read_file(file_name):
     """
-        This function takes name of the file and reads the file from local directory and loads it into a dataframe.
-        It then transposes the dataframe and returns both the first and transposed dataframes
+    This function takes name of the file and reads it from local directory and loads it into a dataframe.
+    Then transposes the dataframe and returns both the first and transposed dataframes. It also sets
+    the header for the transposed dataframe
+
+    Parameters
+    ----------
+    file_name : string
+        Name of the file tobe read into the datarame.
+
+    Returns
+    -------
+    A dataframe loaded from the file and it's transpose.
+
     """
 
     address = "E:/Herts/ADS1/Assignment 2/ADS1 Statistics and trends/" + file_name
     df = pd.read_excel(address)
     df_transpose = pd.DataFrame.transpose(df)
+    #Header setting
+    header = df_transpose.iloc[0].values.tolist()
+    df_transpose.columns = header
     return(df, df_transpose)
+
+
+def clean_df(df):
+    """
+    
+
+    Parameters
+    ----------
+    df : dataframe
+        Dataframe that needs to be cleaned and index converted.
+
+    Returns
+    -------
+    df : dataframe
+        dataframe with required columns and index as int.
+
+    """
+
+    #Cleaning the dataframe
+    df = df.iloc[1:]
+    df = df.iloc[11:55]
+    
+    #Converting index ot int
+    df.index = df.index.astype(int)
+    df = df[df.index>1989]
+
+    #cleaning empty cells
+    df = df.dropna(axis = 'columns')
+    return df
+
+
+def country_df(country_name):
+    """
+    Creates a dataframe for the country with electricity usage, co2 emission, gdp, renewable energy as columns
+
+    Parameters
+    ----------
+    country_name : string
+        Name of the country to create the dataframe.
+
+    Returns
+    -------
+    df_name : dataframe
+        Newly created dataframe.
+
+    """
+
+
+    df_name = "df_" + country_name
+    df_name = pd.concat([df_energy_countries[country_name].astype(float), df_pop_countries[country_name].astype(float), df_gdp_countries[country_name].astype(float), df_renew_countries[country_name].astype(float), df_co2_countries[country_name].astype(float)], axis =1)
+    df_name.columns.values[0] = "Electricity"
+    df_name.columns.values[1] = "Population"
+    df_name.columns.values[2] = "GDP"
+    df_name.columns.values[3] = "Renewable"
+    df_name["GDP"] = df_name["GDP"].interpolate(method='linear', axis=0).ffill().bfill()
+    df_name.columns.values[4] = "CO2"
+    return (df_name)
+
+
+def heatmap():
+
+    df_china = country_df("China")
+    df_uk = country_df("United Kingdom")
+    df_france = country_df("France")
+    
+    
+    dataplot = sb.heatmap(df_china.corr(), cmap="YlGnBu", annot=True)
+    plt.show()
+    dataplot = sb.heatmap(df_uk.corr(), cmap="YlGnBu", annot=True)
+    plt.show()
+    dataplot = sb.heatmap(df_france.corr(), cmap="YlGnBu", annot=True)
+    plt.show()
+
 
 #Reads the files
 df_energy_total,df_energy_countries = read_file("Electric_power_consumption.xls")
 df_co2_total,df_co2_countries = read_file("CO2_Emission.xls")
 df_renew_total,df_renew_countries = read_file("Renewable.xls")
 df_gdp_total, df_gdp_countries = read_file("GDP_Per_Capita.xls")
+df_pop_total, df_pop_countries = read_file("Population_total.xls")
 
 
 
+#Creates a list of countries and years to use in the plots
+countries =['Bangladesh', 'China', 'Germany', 'France',  'United Kingdom', 'India','Kenya', 'Saudi Arabia', 'United States']
+countries_label =['BD', 'CN', 'DE',  'FR', 'UK', 'IN', 'KE', 'KSA', 'US']
+years = [1990, 1994, 1998, 2002, 2006, 2010, 2014]
 
 
 """
 Electric power used bar graph
-Creating bar graph of energy used by mutiple countries from 1990-2014
+Creating bar graph of Electric power consumption (kWh per capita) by mutiple countries from 1990-2014
 """
 
-#Header setting
-header = df_energy_countries.iloc[0].values.tolist()
-df_energy_countries.columns = header
-
 #Cleaning the dataframe
-df_energy_countries = df_energy_countries.iloc[1:]
-df_energy_countries = df_energy_countries.iloc[11:55]
-
-#Converting index ot int
-df_energy_countries.index = df_energy_countries.index.astype(int)
-df_energy_countries = df_energy_countries[df_energy_countries.index>1989]
-df_energy_countries = df_energy_countries.dropna(axis = 'columns')
-
-#Creates a list of countries to use in the plot
-#countries =['Bangladesh', 'Kenya', 'United Kingdom', 'China',  'France', 'India','United States', 'Germany', 'Saudi Arabia']
-countries =['Bangladesh', 'China', 'Germany', 'France',  'United Kingdom', 'India','Kenya', 'Saudi Arabia', 'United States']
-countries_label =['BD', 'CN', 'DE',  'FR', 'UK', 'IN', 'KE', 'KSA', 'US']
-df_energy_time = pd.DataFrame.transpose(df_energy_countries)
-years = [1990, 1994, 1998, 2002, 2006, 2010, 2014]
+df_energy_countries = clean_df(df_energy_countries)
 
 #selecting only required data
+df_energy_time = pd.DataFrame.transpose(df_energy_countries)
 df_energy_subset_time = df_energy_time[years].copy()
 df_energy_subset_time = df_energy_subset_time.loc[df_energy_subset_time.index.isin(countries)]
 
 #plotting the data
-n=9
+n= len(countries)
 r=np.arange(n)
 width= 0.1
 plt.bar(r-0.3, df_energy_subset_time[1990], color = 'grey',width = width, edgecolor = 'black',label='1990')
-plt.bar(r-0.2, df_energy_subset_time[1994], color = 'g',width = width, edgecolor = 'black',label='1994')
+plt.bar(r-0.2, df_energy_subset_time[1994], color = 'green',width = width, edgecolor = 'black',label='1994')
 plt.bar(r-0.1, df_energy_subset_time[1998], color = 'orange',width = width, edgecolor = 'black',label='1998')
 plt.bar(r, df_energy_subset_time[2002], color = 'red',width = width, edgecolor = 'black',label='2002')
 plt.bar(r+0.1, df_energy_subset_time[2006], color = 'steelblue',width = width, edgecolor = 'black',label='2006')
@@ -83,24 +160,14 @@ plt.show()
 
 """
 Co2 emission bar graph
-Creating bar graph of Co2 emission of multiple countries from 1990-2014
+Creating bar graph of CO2 emissions (kt) of multiple countries from 1990-2014
 """
 
-header = df_co2_countries.iloc[0].values.tolist()
-df_co2_countries.columns = header
-
 #Cleaning the dataframe
+df_co2_countries = clean_df(df_co2_countries)
 
-df_co2_countries = df_co2_countries.iloc[1:]
-df_co2_countries = df_co2_countries.iloc[11:55]
-
-df_co2_countries.index = df_co2_countries.index.astype(int)
-df_co2_countries = df_co2_countries[df_co2_countries.index>1989]
-
-df_co2_countries = df_co2_countries.dropna(axis = 'columns')
-
+#selecting only required data
 df_co2_time = pd.DataFrame.transpose(df_co2_countries)
-
 df_co2_subset_time = df_co2_time[years].copy()
 df_co2_subset_time = df_co2_subset_time.loc[df_co2_subset_time.index.isin(countries)]
 
@@ -124,28 +191,17 @@ plt.show()
 
 """
 Renewable bar graph
-Creates a bar chart of renewale energy consumption of multiple countries during 1990-2014
+Creates a bar chart of Renewable energy consumption (% of total final energy consumption)
+of multiple countries during 1990-2014
 """
 
-
-header = df_renew_countries.iloc[0].values.tolist()
-df_renew_countries.columns = header
-
 #Cleaning the dataframe
-
-df_renew_countries = df_renew_countries.iloc[1:]
-df_renew_countries = df_renew_countries.iloc[11:55]
-
-df_renew_countries.index = df_renew_countries.index.astype(int)
-df_renew_countries = df_renew_countries[df_renew_countries.index>1989]
-
-df_renew_countries = df_renew_countries.dropna(axis = 'columns')
-
+df_renew_countries = clean_df(df_renew_countries)
+#selecting only required data
 df_renew_time = pd.DataFrame.transpose(df_renew_countries)
 df_renew_subset_time = df_renew_time[years].copy()
 df_renew_subset_time = df_renew_subset_time.loc[df_renew_subset_time.index.isin(countries)]
 
-#print(df_energy_subset_time[1995])
 
 #plotting the data
 plt.bar(r-0.3, df_renew_subset_time[1990], color = 'pink',width = width, edgecolor = 'black',label='1990')
@@ -167,18 +223,18 @@ plt.show()
 """
 Lineplot gdp per capita
 Creates a lineplot of GDP Per capita of multiple countries during 1990-2014.
-Used mean to fill empty cells
+Used mean to fill empty cells of Israel
 """
 
-header = df_gdp_countries.iloc[0].values.tolist()
-df_gdp_countries.columns = header
 
 #Cleaning the dataframe
+#Clean function is not used here because it will remove entirety of Israel column
 df_gdp_countries = df_gdp_countries.iloc[1:]
 df_gdp_countries = df_gdp_countries.iloc[11:55]
 
 df_gdp_countries.index = df_gdp_countries.index.astype(int)
 df_gdp_countries = df_gdp_countries[df_gdp_countries.index>1990]
+
 
 #using mean() function of pandas to fill empty cells of Israel
 df_gdp_countries["Israel"] = df_gdp_countries["Israel"].interpolate(method='nearest', axis=0).ffill().bfill()
@@ -204,3 +260,60 @@ plt.title("GDP per capita, PPP (current international $)")
 #plt.savefig("GDP Per Capita.png", dpi = 300, bbox_inches='tight')
 plt.show()
 
+
+
+"""
+Lineplot total population
+Creates a lineplot of total population of multiple countries during 1990-2014.
+"""
+#Cleaning the dataframe
+#Clean function is not used here because it will remove entirety of Israel column
+df_pop_countries = df_pop_countries.iloc[1:]
+df_pop_countries = df_pop_countries.iloc[11:55]
+
+df_pop_countries.index = df_pop_countries.index.astype(int)
+df_pop_countries = df_pop_countries[df_pop_countries.index>1990]
+
+
+#using mean() function of pandas to fill empty cells of Israel
+df_pop_countries["Israel"] = df_pop_countries["Israel"].interpolate(method='nearest', axis=0).ffill().bfill()
+
+
+#plotting the data
+plt.figure()
+plt.plot(df_pop_countries.index, df_pop_countries["Bangladesh"])
+plt.plot(df_pop_countries.index, df_pop_countries["China"] )
+plt.plot(df_pop_countries.index, df_pop_countries["Germany"])
+plt.plot(df_pop_countries.index, df_pop_countries["France"])
+plt.plot(df_pop_countries.index, df_pop_countries["United Kingdom"])
+plt.plot(df_pop_countries.index, df_pop_countries["India"])
+plt.plot(df_pop_countries.index, df_pop_countries["Kenya"])
+plt.plot(df_pop_countries.index, df_pop_countries["Saudi Arabia"])
+plt.plot(df_pop_countries.index, df_pop_countries["United States"])
+plt.plot(df_pop_countries.index, df_pop_countries["Israel"])
+plt.xlim(1991,2014)
+plt.xlabel("Year")
+plt.ylabel("Population")
+plt.legend(['BD', 'CN', 'DE',  'FR', 'UK', 'IN', 'KE', 'KSA', 'US', 'IL'], prop = {'size': 8})
+plt.title("Population, total")
+#plt.savefig("GDP Per Capita.png", dpi = 300, bbox_inches='tight')
+plt.show()
+
+
+
+"""
+Creating heatmap of China and United Kingdom
+"""
+
+df_china = country_df("China")
+df_uk = country_df("United Kingdom")
+df_france = country_df("France")
+
+
+dataplot = sb.heatmap(df_china.corr(), cmap="YlGnBu", annot=True)
+plt.savefig("China_heatmap.png", dpi = 300, bbox_inches='tight')
+plt.show()
+dataplot = sb.heatmap(df_uk.corr(), cmap="YlGnBu", annot=True)
+plt.show()
+dataplot = sb.heatmap(df_france.corr(), cmap="YlGnBu", annot=True)
+plt.show()
